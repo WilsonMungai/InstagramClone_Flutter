@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:isntagram/Screens/login_screen.dart';
+import 'package:isntagram/Screens/signup_screen.dart';
 import 'package:isntagram/responsive/mobile_screen_layout.dart';
 import 'package:isntagram/responsive/responsive_layout_screen.dart';
 import 'package:isntagram/responsive/web_screen_layout.dart';
@@ -14,7 +16,7 @@ void main() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
         apiKey: "AIzaSyCH0SgpfECQ-YWeDWnoDgjMo0_1r28_aiY",
-        appId: "1:881923422061:web:91bf175c2bb5dc59fd0c64",
+        appId: "1:881923422061:web:e357888994b91250fd0c64",
         messagingSenderId: "881923422061",
         projectId: "instagram-flutter-7b2f6",
         storageBucket: "instagram-flutter-7b2f6.appspot.com",
@@ -40,9 +42,10 @@ class MyApp extends StatelessWidget {
       // app theme
       theme: ThemeData.dark()
           .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
-      home: const ResponsiveLayout(
-          mobileScreenLayout: MobileScreenLayout(),
-          webScreenLayout: WebScreenLayout()),
+      // home: const ResponsiveLayout(
+      //     mobileScreenLayout: MobileScreenLayout(),
+      //     webScreenLayout: WebScreenLayout()),
+      home: SignUpScreen(),
     );
   }
 }
