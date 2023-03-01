@@ -1,7 +1,12 @@
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isntagram/Resources/Auth_method.dart';
 import 'package:isntagram/widgets/text_field_input.dart';
+import '../utils/utils.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,6 +24,8 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
   final TextEditingController _bioController = TextEditingController();
   // password text field
   final TextEditingController _userNameController = TextEditingController();
+  // Image picker
+  Uint8List? _image;
 
   // clear text field when widget gets disposed
   @override
@@ -28,6 +35,15 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     _bioController.dispose();
     _userNameController.dispose();
+  }
+
+  // select image funtion
+  void selectImage() async {
+    Uint8List image = await pickImage(ImageSource.gallery);
+    // set image
+    setState(() {
+      _image = image;
+    });
   }
 
   @override
@@ -54,22 +70,27 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
               Stack(
                 children: [
                   // profile image holder
-                  const CircleAvatar(
-                    radius: 64,
-                    backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1677505622904-f1c491bae290?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'),
-                  ),
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                        )
+                      : const CircleAvatar(
+                          radius: 64,
+                          backgroundImage: NetworkImage(
+                              'https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg'),
+                        ),
                   // add image button
                   Positioned(
                       bottom: -10,
                       left: 80,
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: selectImage,
                         icon: const Icon(Icons.add_a_photo),
                       ))
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 48),
               // text field for user name
               TextFieldInput(
                   textEditingController: _userNameController,
