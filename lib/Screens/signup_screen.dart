@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:isntagram/Resources/Auth_method.dart';
 import 'package:isntagram/widgets/text_field_input.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -97,6 +98,14 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
               const SizedBox(height: 24),
               // button for login
               InkWell(
+                onTap: () async {
+                  String res = await AuthMethods().signUpUser(
+                      username: _userNameController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                      bio: _bioController.text);
+                  print(res);
+                },
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
