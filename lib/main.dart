@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +43,35 @@ class MyApp extends StatelessWidget {
       // app theme
       theme: ThemeData.dark()
           .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
-      // home: const ResponsiveLayout(
-      //     mobileScreenLayout: MobileScreenLayout(),
-      //     webScreenLayout: WebScreenLayout()),
-      home: LoginScreen(),
+      home: StreamBuilder(
+        // authStateChanges runs when user signs in or out.
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          // check snapshot is active
+          if (snapshot.connectionState == ConnectionState.active) {
+            // check whether snapshot has data
+            if (snapshot.hasData) {
+              // return responsive layout
+              return const ResponsiveLayout(
+                  mobileScreenLayout: MobileScreenLayout(),
+                  webScreenLayout: WebScreenLayout());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('${snapshot.error}'),
+              );
+            }
+            // snapshot is not active and is waiting
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: primaryColor),
+              );
+            }
+          }
+          // if the snapshot is active but has no data, the show login screen
+          // meaning the user is not authenticated
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }

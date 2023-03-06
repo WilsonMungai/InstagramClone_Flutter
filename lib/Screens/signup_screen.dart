@@ -3,8 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isntagram/Resources/Auth_method.dart';
+import 'package:isntagram/Screens/login_screen.dart';
 import 'package:isntagram/utils/colors.dart';
 import 'package:isntagram/widgets/text_field_input.dart';
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive_layout_screen.dart';
+import '../responsive/web_screen_layout.dart';
 import '../utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -61,12 +65,26 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
         file: _image!);
     if (res != 'success') {
       showSnackBar(res, context);
+      setState(() {
+        _isLoading = false;
+      });
     } else {
       // finish loader and sign up user
       setState(() {
         _isLoading = false;
       });
+      // Navigate to next screen
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout())));
     }
+  }
+
+  // Navigate to login screen
+  void navigateToLogIn() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: ((context) => const LoginScreen())));
   }
 
   @override
@@ -172,7 +190,7 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
                     child: const Text("Already have an account?"),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToLogIn,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(" Log in",
