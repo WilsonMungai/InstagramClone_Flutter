@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:isntagram/Resources/storage_methods.dart';
 
 class AuthMethods {
   // instance of firebase auth
@@ -12,13 +13,12 @@ class AuthMethods {
 
   // sign up user
   // return type is future coz the calls to firebase are asynchronous
-  Future<String> signUpUser({
-    required String username,
-    required String email,
-    required String password,
-    required String bio,
-    // required Uint8List file
-  }) async {
+  Future<String> signUpUser(
+      {required String username,
+      required String email,
+      required String password,
+      required String bio,
+      required Uint8List file}) async {
     String res = "Some error occured";
     try {
       // check fields are not empty
@@ -27,7 +27,10 @@ class AuthMethods {
         // await firebase auth
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        // ignore: avoid_print
         print(cred.user!.uid);
+        String photoURL = await StorageMethods()
+            .uploadImageToStorage('progilePics', file, false);
         // add user to database
         // create user collection, with a uid and set it
         await _firestore.collection('users').doc(cred.user!.uid).set({
@@ -35,6 +38,7 @@ class AuthMethods {
           'uid': cred.user!.uid,
           'email': email,
           'bio': bio,
+          'photoURL': photoURL,
           // a list of uid followers
           'followers': [],
           // a list of uid following
@@ -50,6 +54,10 @@ class AuthMethods {
         //   'following': []
         // });
         res = 'success';
+      }
+    } on FirebaseAuthException catch (err) {
+      if (err.code == 'invalid-email') {
+        res = 'The email is not valid';
       }
     } catch (err) {
       res = err.toString();

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isntagram/Resources/Auth_method.dart';
+import 'package:isntagram/utils/colors.dart';
 import 'package:isntagram/widgets/text_field_input.dart';
 import '../utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,6 +26,8 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
   final TextEditingController _userNameController = TextEditingController();
   // Image picker
   Uint8List? _image;
+  // loader
+  bool _isLoading = false;
 
   // clear text field when widget gets disposed
   @override
@@ -44,6 +46,27 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
     setState(() {
       _image = image;
     });
+  }
+
+  void signUpUser() async {
+    // loader
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+        username: _userNameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        bio: _bioController.text,
+        file: _image!);
+    if (res != 'success') {
+      showSnackBar(res, context);
+    } else {
+      // finish loader and sign up user
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -119,14 +142,7 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
               const SizedBox(height: 24),
               // button for login
               InkWell(
-                onTap: () async {
-                  String res = await AuthMethods().signUpUser(
-                      username: _userNameController.text,
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                      bio: _bioController.text);
-                  print(res);
-                },
+                onTap: signUpUser,
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
@@ -135,7 +151,14 @@ class _SignUpScreenScreenState extends State<SignUpScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                       color: Colors.blue),
-                  child: const Text('Sign Up'),
+                  // show loader on button
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : const Text('Sign Up'),
                 ),
               ),
               const SizedBox(height: 12),
