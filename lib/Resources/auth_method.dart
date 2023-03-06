@@ -64,4 +64,36 @@ class AuthMethods {
     }
     return res;
   }
+
+  // user log in
+  Future<String> logInUse({
+    required String email,
+    required String password,
+  }) async {
+    String res = "Please enter valid email and password";
+    try {
+      // check fields are not empty
+      if (email.isNotEmpty || password.isNotEmpty) {
+        // log in user
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        res = 'success';
+      } else {
+        res = 'Please enter an email and password';
+      }
+    }
+    // custom error handling
+    on FirebaseAuthException catch (err) {
+      if (err.code == 'The email address is badly formatted') {
+        // show wrong email error message
+        res = 'Please enter valid email and password';
+      } else {
+        // show wrong password error message
+        res = 'Please enter valid email and password';
+      }
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
 }
