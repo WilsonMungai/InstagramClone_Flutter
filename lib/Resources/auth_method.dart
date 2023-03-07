@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:isntagram/models/user.dart' as model;
 import 'package:isntagram/Resources/storage_methods.dart';
 
 class AuthMethods {
@@ -33,17 +34,23 @@ class AuthMethods {
             .uploadImageToStorage('progilePics', file, false);
         // add user to database
         // create user collection, with a uid and set it
-        await _firestore.collection('users').doc(cred.user!.uid).set({
-          'username': username,
-          'uid': cred.user!.uid,
-          'email': email,
-          'bio': bio,
-          'photoURL': photoURL,
-          // a list of uid followers
-          'followers': [],
-          // a list of uid following
-          'following': []
-        });
+
+        // create user model
+        model.User user = model.User(
+            username: username,
+            uid: cred.user!.uid,
+            email: email,
+            bio: bio,
+            photoURL: photoURL,
+            // a list of uid followers
+            followers: [],
+            // a list of uid following
+            following: []);
+
+        await _firestore
+            .collection('users')
+            .doc(cred.user!.uid)
+            .set(user.toJson());
         // this method returns two different uids
         // _firestore.collection('users').add({
         //   'username': username,

@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
       // app theme
       theme: ThemeData.dark()
           .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
+      // state management
       home: StreamBuilder(
         // authStateChanges runs when user signs in or out.
         stream: FirebaseAuth.instance.authStateChanges(),
