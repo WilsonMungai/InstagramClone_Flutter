@@ -11,10 +11,49 @@ class MobileScreenLayout extends StatefulWidget {
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   int _page = 0;
+  // manipulate which page is visible
+  late PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+  }
+
+  // check page that is selected
+  void navigationTapped(int page) {
+    pageController.jumpToPage(page);
+  }
+
+  void onPageChanged(int page) {
+    setState(() {
+      _page = page;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text('This is a mobile screen layout.')),
+      body: PageView(
+        // list of widget matching bottom navigation bar items
+        children: [
+          Text("feed"),
+          Text("search"),
+          Text("add"),
+          Text("like"),
+          Text("profile"),
+        ],
+        // disable scroll effect from page to page
+        physics: const NeverScrollableScrollPhysics(),
+        controller: pageController,
+        onPageChanged: onPageChanged,
+      ),
       // bottom navigation bar
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
@@ -22,33 +61,41 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         items: [
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.search,
+                Icons.home,
                 color: _page == 0 ? primaryColor : secondaryColor,
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.add_circle,
+                Icons.search,
                 color: _page == 1 ? primaryColor : secondaryColor,
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.favorite,
+                Icons.add_circle,
                 color: _page == 2 ? primaryColor : secondaryColor,
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.person,
+                Icons.favorite,
                 color: _page == 3 ? primaryColor : secondaryColor,
               ),
               label: '',
               backgroundColor: primaryColor),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.person,
+                color: _page == 4 ? primaryColor : secondaryColor,
+              ),
+              label: '',
+              backgroundColor: primaryColor),
         ],
+        onTap: navigationTapped,
       ),
     );
   }
