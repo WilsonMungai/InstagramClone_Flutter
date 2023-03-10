@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:isntagram/utils/dimensions.dart';
+import 'package:isntagram/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user_provider.dart';

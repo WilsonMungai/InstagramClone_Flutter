@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:isntagram/utils/colors.dart';
 
+import '../utils/global_variables.dart';
+
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({Key? key}) : super(key: key);
 
@@ -42,13 +44,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     return Scaffold(
       body: PageView(
         // list of widget matching bottom navigation bar items
-        children: [
-          Text("feed"),
-          Text("search"),
-          Text("add"),
-          Text("like"),
-          Text("profile"),
-        ],
+        children: homeScreenItems,
         // disable scroll effect from page to page
         physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
