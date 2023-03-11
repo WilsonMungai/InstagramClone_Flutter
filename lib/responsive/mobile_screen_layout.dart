@@ -12,10 +12,12 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
+  // page index
   int _page = 0;
   // manipulate which page is visible
   late PageController pageController;
 
+  // initialize page controller state
   @override
   void initState() {
     super.initState();
@@ -33,12 +35,14 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     pageController.jumpToPage(page);
   }
 
+  // track when page changes
   void onPageChanged(int page) {
     setState(() {
       _page = page;
     });
   }
 
+  // list of pages
   @override
   Widget build(BuildContext context) {
     return Scaffold(

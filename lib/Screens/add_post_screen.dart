@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:isntagram/Resources/firestor_methods.dart';
 import 'package:isntagram/models/user.dart';
 import 'package:isntagram/utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -18,11 +19,13 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   // holds the selected image
   Uint8List? _file;
+  // loading indicator
+  bool _isLoading = false;
 
   // text editing controller
-  final TextEditingController _descriotionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
-  //
+  // action to select an image to be posted
   _selectImage(BuildContext context) async {
     // dialog to select image
     return showDialog(
@@ -75,6 +78,45 @@ class _AddPostScreenState extends State<AddPostScreen> {
         });
   }
 
+  // descriotion controller dispose
+  @override
+  void dispose() {
+    super.dispose();
+    _descriptionController.dispose();
+  }
+
+  // post image action
+  void postImage(String uid, String username, String profileImgae) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      String res = await FireStoreMethods().uploadPost(
+          _descriptionController.text, _file!, uid, username, profileImgae);
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar('Posted', context);
+        clearImage();
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar(res, context);
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+  }
+
+  // set image selected to null
+  void clearImage() {
+    setState(() {
+      _file = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // state management
@@ -90,20 +132,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
               },
             ),
           )
+        // else return this when we have an image and want to upload one
         :
         // return this when we have an image and want to upload one
         Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
-              // back button
+              // arrow back button
               leading: IconButton(
-                  icon: const Icon(Icons.arrow_back), onPressed: () => {}),
+                icon: const Icon(Icons.arrow_back),
+                onPressed: clearImage,
+              ),
               title: const Text('Post to'),
               centerTitle: false,
-              // right bar button
+              // post image right bar button action
               actions: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      postImage(user.uid, user.username, user.photoURL),
                   child: const Text(
                     'Post',
                     style: TextStyle(
@@ -116,6 +162,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             body: Column(
               children: [
+                _isLoading
+                    ? const LinearProgressIndicator()
+                    : const Padding(
+                        padding: EdgeInsets.only(top: 0),
+                      ),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +181,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: TextField(
-                          controller: _descriotionController,
+                          controller: _descriptionController,
                           decoration: const InputDecoration(
                             hintText: 'Write a caption...',
                             border: InputBorder.none,
